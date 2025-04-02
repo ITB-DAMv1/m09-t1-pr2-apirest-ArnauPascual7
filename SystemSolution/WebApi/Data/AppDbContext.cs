@@ -3,11 +3,11 @@ using WebApi.Models;
 
 namespace WebApi.Data
 {
-    public class IdentityDbContext : DbContext
+    public class AppDbContext : DbContext
     {
         public DbSet<Game> Games { get; set; }
         public DbSet<AppUser> Users { get; set; }
 
-        public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     }
 }
