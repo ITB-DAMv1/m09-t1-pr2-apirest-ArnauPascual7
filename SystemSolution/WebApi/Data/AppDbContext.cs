@@ -11,21 +11,30 @@ namespace WebApi.Data
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Game>()
-                .HasKey(g => g.Id);
-            modelBuilder.Entity<AppUser>()
-                .HasKey(u => u.Id);
-            modelBuilder.Entity<Vote>()
+            base.OnModelCreating(builder);
+
+            builder.Entity<Game>()
+                .HasMany(g => g.Votes)
+                .WithOne(v => v.Game)
+                .HasForeignKey(v => v.GameId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<AppUser>()
+                .HasMany(u => u.Votes)
+                .WithOne(v => v.User)
+                .HasForeignKey(v => v.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /*modelBuilder.Entity<Vote>()
                 .HasOne<AppUser>()
                 .WithMany()
                 .HasForeignKey(v => v.User);
             modelBuilder.Entity<Vote>()
                 .HasOne<Game>()
                 .WithMany()
-                .HasForeignKey(v => v.Game);
+                .HasForeignKey(v => v.Game);*/
         }
     }
 }
