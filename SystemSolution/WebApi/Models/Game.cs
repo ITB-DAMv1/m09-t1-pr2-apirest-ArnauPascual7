@@ -11,5 +11,7 @@ namespace WebApi.Models
         public string? Title { get; set; }
         public string? Description { get; set; }
         public string? DevTeam { get; set; }
+
+        public List<Vote>? Votes { get; set; }
     }
 }
