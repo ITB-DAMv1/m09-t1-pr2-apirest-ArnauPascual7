@@ -35,8 +35,17 @@ namespace WebApi.Controllers
                 Email = reg.Email
             };
             IdentityResult result = await _userManager.CreateAsync(user, reg.Password);
+            IdentityResult resultRole = new IdentityResult();
 
-            if (result.Succeeded) return Ok("Usuari registrat correctament");
+            if (result.Succeeded)
+            {
+                resultRole = await _userManager.AddToRoleAsync(user, "User");
+            }
+
+            if (result.Succeeded && resultRole.Succeeded)
+            {
+                return Ok("Usuari registrat correctament");
+            }
 
             return BadRequest(result.Errors);
         }
