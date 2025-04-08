@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using WebApi.DTOs;
 using WebApi.Models;
 
@@ -87,7 +90,29 @@ namespace WebApi.Controllers
                 }
             }
 
-            return Ok();
+            return Ok(CreateToken(claims.ToArray()));
+        }
+
+        private string CreateToken(Claim[] claims)
+        {
+            var jwtConfig = _configuration.GetSection("JwtSettings");
+            var secretKey = jwtConfig["Key"];
+            var issuer = jwtConfig["Issuer"];
+            var audience = jwtConfig["Audience"];
+            var expirationMinutes = int.Parse(jwtConfig["ExpirationMinutes"]);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
