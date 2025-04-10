@@ -122,8 +122,9 @@ namespace WebApi
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            // L'ordre és important
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 

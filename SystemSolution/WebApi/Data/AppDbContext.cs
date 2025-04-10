@@ -27,14 +27,15 @@ namespace WebApi.Data
                 .HasForeignKey(v => v.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            /*modelBuilder.Entity<Vote>()
-                .HasOne<AppUser>()
-                .WithMany()
-                .HasForeignKey(v => v.User);
-            modelBuilder.Entity<Vote>()
-                .HasOne<Game>()
-                .WithMany()
-                .HasForeignKey(v => v.Game);*/
+            /*builder.Entity<Vote>()
+                .HasOne(v => v.Game)
+                .WithMany(g => g.Votes)
+                .HasForeignKey(v => v.GameId);
+
+            builder.Entity<Vote>()
+                .HasOne(v => v.User)
+                .WithMany(u => u.Votes)
+                .HasForeignKey(v => v.UserId);*/
         }
     }
 }

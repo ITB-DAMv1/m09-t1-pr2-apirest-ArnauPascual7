@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Data;
+using WebApi.DTOs;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -26,6 +31,10 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
+            Debug.WriteLine("?: User Name Logged -> " + User.Identity?.Name);
+            Debug.WriteLine("?: User Id -> " + User.FindFirstValue(ClaimTypes.NameIdentifier));
+            Debug.WriteLine("?: User Role -> " + User.FindFirstValue(ClaimTypes.Role));
+
             return await _context.Games.ToListAsync();
         }
 
@@ -47,14 +56,19 @@ namespace WebApi.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame(int id, Game game)
+        public async Task<IActionResult> PutGame(int id, GameDTO game)
         {
-            if (id != game.Id)
+            var dbGame = await _context.Games.FindAsync(id);
+            if (dbGame == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(game).State = EntityState.Modified;
+            dbGame.Title = game.Title;
+            dbGame.Description = game.Description;
+            dbGame.DevTeam = game.DevTeam;
+
+            _context.Update(dbGame);
 
             try
             {
@@ -72,19 +86,27 @@ namespace WebApi.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(dbGame);
         }
 
         // POST: api/Games
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Game>> PostGame(Game game)
+        public async Task<ActionResult<Game>> PostGame(GameDTO game)
         {
-            _context.Games.Add(game);
+            var dbGame = new Game()
+            {
+                Title = game.Title,
+                Description = game.Description,
+                DevTeam = game.DevTeam
+            };
+
+            _context.Games.Add(dbGame);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGame", new { id = game.Id }, game);
+            return Ok(game);
+                // CreatedAtAction("GetGame", new { id = await _context.Games.FindAsync() }, game);
         }
 
         // DELETE: api/Games/5
@@ -109,7 +131,37 @@ namespace WebApi.Controllers
         [HttpPost("{id}")]
         public async Task<IActionResult> Vote(int id)
         {
+            var game = await _context.Games.FindAsync(id);
+            if (game == null)
+            {
+                return NotFound("El joc no s'ha trobat");
+            }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return Unauthorized("No ets un usuari autoritzat");
+            }
+
+            var vote = new Vote()
+            {
+                GameId = game.Id,
+                UserId = user.Id,
+                Game = game,
+                User = user
+            };
+
+            _context.Votes.Add(vote);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetGame", new { id = game.Id }, game);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("Votes")]
+        public async Task<ActionResult<IEnumerable<Vote>>> GetVotes()
+        {
+            return await _context.Votes.ToListAsync();
         }
 
         private bool GameExists(int id)

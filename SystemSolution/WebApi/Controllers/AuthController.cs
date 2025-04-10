@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -28,14 +29,14 @@ namespace WebApi.Controllers
         [HttpPost("registre")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO reg)
         {
-            AppUser user = new AppUser
+            var user = new AppUser
             {
                 Name = reg.Name,
                 UserName = reg.Username,
                 Email = reg.Email
             };
-            IdentityResult result = await _userManager.CreateAsync(user, reg.Password);
-            IdentityResult resultRole = new IdentityResult();
+            var result = await _userManager.CreateAsync(user, reg.Password);
+            var resultRole = new IdentityResult();
 
             if (result.Succeeded)
             {
@@ -52,14 +53,14 @@ namespace WebApi.Controllers
         [HttpPost("admin/registre")]
         public async Task<IActionResult> AdminRegister([FromBody] RegisterDTO reg)
         {
-            AppUser user = new AppUser
+            var user = new AppUser
             {
                 Name = reg.Name,
                 UserName = reg.Username,
                 Email = reg.Email
             };
-            IdentityResult result = await _userManager.CreateAsync(user, reg.Password);
-            IdentityResult resultRole = new IdentityResult();
+            var result = await _userManager.CreateAsync(user, reg.Password);
+            var resultRole = new IdentityResult();
 
             if (result.Succeeded)
             {
@@ -76,17 +77,21 @@ namespace WebApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {
-            AppUser? user = await _userManager.FindByEmailAsync(login.Email);
+            var user = await _userManager.FindByEmailAsync(login.Email);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, login.Password))
             {
                 return Unauthorized("Email o contrasenya incorrectes");
             }
 
-            List<Claim> claims = new List<Claim>()
+            var userRole = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
+            Debug.WriteLine("?: User Role -> " + userRole);
+
+            var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, userRole)
             };
 
             var roles = await _userManager.GetRolesAsync(user);

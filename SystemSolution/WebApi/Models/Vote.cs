@@ -13,8 +13,8 @@ namespace WebApi.Models
         public DateTime Date { get; set; } = DateTime.Now;
 
         [ForeignKey("GameId")]
-        public required Game Game { get; set; }
+        public Game Game { get; set; }
         [ForeignKey("UserId")]
-        public required AppUser User { get; set; }
+        public AppUser User { get; set; }
     }
 }
