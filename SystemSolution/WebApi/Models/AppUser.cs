@@ -6,6 +6,6 @@ namespace WebApi.Models
     {
         public string? Name { get; set; }
 
-        public List<Vote>? Votes { get; set; }
+        public List<Vote> Votes { get; set; } = new List<Vote>();
     }
 }

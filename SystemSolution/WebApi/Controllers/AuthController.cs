@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -48,8 +49,10 @@ namespace WebApi.Controllers
                 return Ok("Usuari registrat correctament");
             }
 
-            return BadRequest(result.Errors);
+            return BadRequest(result.Errors.Select(e => e.Description));
         }
+
+        //[Authorize(Roles = "Admin")]
         [HttpPost("admin/registre")]
         public async Task<IActionResult> AdminRegister([FromBody] RegisterDTO reg)
         {
@@ -72,11 +75,14 @@ namespace WebApi.Controllers
                 return Ok("Usuari ADMIN registrat correctament");
             }
 
-            return BadRequest(result.Errors);
+            return BadRequest(result.Errors.Select(e => e.Description));
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var user = await _userManager.FindByEmailAsync(login.Email);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, login.Password))
@@ -84,14 +90,14 @@ namespace WebApi.Controllers
                 return Unauthorized("Email o contrasenya incorrectes");
             }
 
-            var userRole = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
+            /*var userRole = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
             Debug.WriteLine("?: User Role -> " + userRole);
 
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Name, user.Name ?? ""),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, userRole)
+                new Claim(ClaimTypes.Role, userRole ?? "")
             };
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -102,6 +108,18 @@ namespace WebApi.Controllers
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));
                 }
+            }*/
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Name ?? user.UserName ?? ""),
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
+            };
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             return Ok(CreateToken(claims.ToArray()));

@@ -28,7 +28,7 @@ namespace WebApi
                     Name = "Authorization",
                     Type = SecuritySchemeType.Http,
                     BearerFormat = "JWT",
-                    Scheme = "bearer"
+                    Scheme = "Bearer"
                 });
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
@@ -41,7 +41,7 @@ namespace WebApi
                                 Id = "Bearer"
                             }
                         },
-                        new string[]{}
+                        Array.Empty<string>()
                     }
                 });
             });
@@ -99,7 +99,7 @@ namespace WebApi
 
             builder.Services.AddAuthorization();
 
-            builder.Services.AddOpenApi();
+            //builder.Services.AddOpenApi();
 
             builder.Services.AddEndpointsApiExplorer();
 

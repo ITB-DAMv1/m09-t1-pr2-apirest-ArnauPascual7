@@ -29,46 +29,57 @@ namespace WebApi.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGames()
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames()
         {
             Debug.WriteLine("?: User Name Logged -> " + User.Identity?.Name);
             Debug.WriteLine("?: User Id -> " + User.FindFirstValue(ClaimTypes.NameIdentifier));
             Debug.WriteLine("?: User Role -> " + User.FindFirstValue(ClaimTypes.Role));
 
-            return await _context.Games.ToListAsync();
+            var dbGames = await _context.Games.ToListAsync();
+            var games = dbGames.Select(Tools.GameHelper.SetGameDTOFromGame).ToList();
+            for (var i = 0; i < games.Count; i++)
+            {
+                var votes = await _context.Votes.Where(v => v.GameId == dbGames[i].Id).ToListAsync();
+                games[i].VoteCount = votes.Count;
+            }
+
+            return Ok(games);
         }
 
         // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        public async Task<ActionResult<GameDTO>> GetGame(int id)
         {
             var game = await _context.Games.FindAsync(id);
 
             if (game == null)
             {
-                return NotFound();
+                return NotFound("No s'ha trobat el joc");
             }
 
-            return game;
+            var gameDTO = Tools.GameHelper.SetGameDTOFromGame(game);
+            gameDTO.VoteCount = await _context.Votes.CountAsync(v => v.GameId == game.Id);
+
+            return gameDTO;
         }
 
         // PUT: api/Games/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame(int id, GameDTO game)
+        public async Task<IActionResult> PutGame(int id, GameDTO gameDTO)
         {
-            var dbGame = await _context.Games.FindAsync(id);
-            if (dbGame == null)
+            var game = await _context.Games.FindAsync(id);
+            if (game == null)
             {
-                return NotFound();
+                return NotFound("No s'ha trobat el joc");
             }
 
-            dbGame.Title = game.Title;
-            dbGame.Description = game.Description;
-            dbGame.DevTeam = game.DevTeam;
+            game.Title = gameDTO.Title;
+            game.Description = gameDTO.Description;
+            game.DevTeam = gameDTO.DevTeam;
 
-            _context.Update(dbGame);
+            _context.Update(game);
 
             try
             {
@@ -78,7 +89,7 @@ namespace WebApi.Controllers
             {
                 if (!GameExists(id))
                 {
-                    return NotFound();
+                    return NotFound("No s'ha trobat el joc");
                 }
                 else
                 {
@@ -86,27 +97,26 @@ namespace WebApi.Controllers
                 }
             }
 
-            return Ok(dbGame);
+            return Ok(game);
         }
 
         // POST: api/Games
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Game>> PostGame(GameDTO game)
+        public async Task<ActionResult<Game>> PostGame(GameDTO gameDTO)
         {
-            var dbGame = new Game()
-            {
-                Title = game.Title,
-                Description = game.Description,
-                DevTeam = game.DevTeam
-            };
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            _context.Games.Add(dbGame);
+            var game = Tools.GameHelper.SetGameFromGameDTO(gameDTO);
+
+            _context.Games.Add(game);
             await _context.SaveChangesAsync();
 
-            return Ok(game);
-                // CreatedAtAction("GetGame", new { id = await _context.Games.FindAsync() }, game);
+            //return Ok(gameDTO);
+            //return CreatedAtAction("GetGame", new { id = await _context.Games.FindAsync() }, game);
+            return CreatedAtAction("GetGame", new { id = game.Id }, game);
         }
 
         // DELETE: api/Games/5
@@ -117,7 +127,7 @@ namespace WebApi.Controllers
             var game = await _context.Games.FindAsync(id);
             if (game == null)
             {
-                return NotFound();
+                return NotFound("No s'ha trobat el joc");
             }
 
             _context.Games.Remove(game);
@@ -126,42 +136,44 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Games/5
-        [Authorize(Roles = "Admin, User")]
-        [HttpPost("{id}")]
+        // POST: api/Games/5/vote
+        [Authorize(Roles = "Admin,User")]
+        [HttpPost("{id}/vote")]
         public async Task<IActionResult> Vote(int id)
         {
             var game = await _context.Games.FindAsync(id);
             if (game == null)
             {
-                return NotFound("El joc no s'ha trobat");
+                return NotFound("No s'ha trobat el joc");
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null)
+            if (userId == null)
             {
                 return Unauthorized("No ets un usuari autoritzat");
+            }
+
+            //var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            var existingVote = await _context.Votes.FirstOrDefaultAsync(v => v.GameId == game.Id && v.UserId == userId);
+            if (existingVote != null)
+            {
+                return BadRequest("Ja has votat aquest joc.");
             }
 
             var vote = new Vote()
             {
                 GameId = game.Id,
-                UserId = user.Id,
-                Game = game,
-                User = user
+                UserId = userId,
+                /*Game = game,
+                User = user*/
             };
 
             _context.Votes.Add(vote);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGame", new { id = game.Id }, game);
-        }
-        [Authorize(Roles = "Admin")]
-        [HttpGet("Votes")]
-        public async Task<ActionResult<IEnumerable<Vote>>> GetVotes()
-        {
-            return await _context.Votes.ToListAsync();
+            return Ok("Vot registrat correctament");
+            //return CreatedAtAction("GetGame", new { id = game.Id }, game);
         }
 
         private bool GameExists(int id)
