@@ -8,13 +8,18 @@ namespace WebApi.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
+        [Required]
         public int GameId { get; set; }
-        public string? UserId { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
         public DateTime Date { get; set; } = DateTime.Now;
 
         [ForeignKey("GameId")]
-        public required Game Game { get; set; }
+        public Game Game { get; set; }
         [ForeignKey("UserId")]
-        public required AppUser User { get; set; }
+        public AppUser User { get; set; }
     }
 }
