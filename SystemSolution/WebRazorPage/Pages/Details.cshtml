@@ -2,6 +2,8 @@
 @model WebRazorPage.Pages.DetailsModel
 @{
 	ViewData["Title"] = "Details";
+	var token = Model.Context;
+	var isLogged = !string.IsNullOrEmpty(token);
 }
 
 <h1>Detalls</h1>
@@ -34,9 +36,13 @@
 			</dd>
 		</dl>
 
-		<form method="post">
-			<button type="submit" class="btn btn-success">Votar</button>
-		</form>
+		@if (isLogged)
+		{
+			<form method="post">
+				<input type="hidden" asp-for="Game.Id" />
+				<button type="submit" class="btn btn-primary">Votar</button>
+			</form>
+		}
 
 		<a asp-page="Index" class="btn btn-secondary">Tornar</a>
 
