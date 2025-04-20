@@ -13,6 +13,9 @@ namespace WebRazorPage.Pages
 
         [BindProperty]
         public Game? Game { get; set; }
+
+        public string? Context { get; set; }
+
         public string? VoteMessage { get; set; }
         public string? ErrorMessage { get; set; }
 
@@ -24,6 +27,8 @@ namespace WebRazorPage.Pages
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            Context = HttpContext.Session.GetString("AuthToken");
+
             var client = _httpClientFactory.CreateClient("ApiGameJam");
             var response = await client.GetAsync($"api/Games/{id}");
 
@@ -57,19 +62,24 @@ namespace WebRazorPage.Pages
         {
             var client = _httpClientFactory.CreateClient("ApiGameJam");
 
-            // Envia la petició POST per votar a la API
+            var token = HttpContext.Session.GetString("AuthToken");
+            if (!string.IsNullOrEmpty(token))
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            }
+
             var response = await client.PostAsync($"api/games/{id}/vote", null);
 
             if (response.IsSuccessStatusCode)
             {
                 VoteMessage = "Vot registrat correctament!";
-                // Torna a carregar el joc per actualitzar el recompte de vots
-                var gameResponse = await client.GetAsync($"api/games/{id}");
+                /*var gameResponse = await client.GetAsync($"api/games/{id}");
                 if (gameResponse.IsSuccessStatusCode)
                 {
                     var json = await gameResponse.Content.ReadAsStringAsync();
                     Game = JsonSerializer.Deserialize<Game>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                }
+                }*/
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
@@ -84,7 +94,6 @@ namespace WebRazorPage.Pages
             {
                 VoteMessage = $"Error en votar: {response.StatusCode}";
             }
-
             return Page();
         }
     }
