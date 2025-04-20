@@ -25,10 +25,6 @@ namespace WebRazorPage
 
             var app = builder.Build();
 
-            app.UseSession();
-
-            app.UseRouting();
-
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -40,6 +36,8 @@ namespace WebRazorPage
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseSession();
 
             app.UseAuthorization();
 

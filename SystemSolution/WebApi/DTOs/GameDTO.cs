@@ -4,6 +4,7 @@ namespace WebApi.DTOs
 {
     public class GameDTO
     {
+        public int Id { get; set; }
         [Required]
         public string Title { get; set; } = string.Empty;
 

@@ -1,0 +1,48 @@
+﻿@page "{id:int}"
+@model WebRazorPage.Pages.DetailsModel
+@{
+	ViewData["Title"] = "Details";
+}
+
+<h1>Detalls</h1>
+
+<div>
+	@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+	{
+		<div class="alert alert-danger">@Model.ErrorMessage</div>
+	}
+	@if (Model.Game != null)
+	{
+		<dl class="row">
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(model => model.Game.Title)
+			</dt>
+			<dd class="col-sm-9">
+				@Html.DisplayFor(model => model.Game.Title)
+			</dd>
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(model => model.Game.DevTeam)
+			</dt>
+			<dd class="col-sm-9">
+				@Html.DisplayFor(model => model.Game.DevTeam)
+			</dd>
+			<dt class="col-sm-3">
+				Vots
+			</dt>
+			<dd class="col-sm-9">
+				@Model.Game.VoteCount
+			</dd>
+		</dl>
+
+		<form method="post">
+			<button type="submit" class="btn btn-success">Votar</button>
+		</form>
+
+		<a asp-page="Index" class="btn btn-secondary">Tornar</a>
+
+		@if (!string.IsNullOrEmpty(Model.VoteMessage))
+		{
+			<div class="alert alert-info mt-2">@Model.VoteMessage</div>
+		}
+	}
+</div>
