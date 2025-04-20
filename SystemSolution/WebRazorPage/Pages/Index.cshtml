@@ -2,6 +2,7 @@
 @model IndexModel
 @{
     ViewData["Title"] = "GameJam";
+    var isLogged = !string.IsNullOrEmpty(Model.Token);
 }
 
 <div>

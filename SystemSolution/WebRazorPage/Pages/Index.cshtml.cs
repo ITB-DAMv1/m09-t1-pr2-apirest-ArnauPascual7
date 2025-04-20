@@ -11,6 +11,7 @@ public class IndexModel : PageModel
     private readonly ILogger<IndexModel> _logger;
 
     public List<Game> Games { get; set; } = new List<Game>();
+    public string? Token { get; set; }
     public string? ErrorMessage { get; set; }
 
     public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger)
@@ -21,6 +22,8 @@ public class IndexModel : PageModel
 
     public async Task OnGetAsync()
     {
+        Token = HttpContext.Session.GetString("AuthToken");
+
         var client = _httpClientFactory.CreateClient("ApiGameJam");
         var response = await client.GetAsync("api/games");
         if (response.IsSuccessStatusCode)
