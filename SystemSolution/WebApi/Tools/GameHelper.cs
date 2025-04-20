@@ -9,6 +9,7 @@ namespace WebApi.Tools
         {
             return new GameDTO
             {
+                Id = game.Id,
                 Title = game.Title ?? "",
                 Description = game.Description,
                 DevTeam = game.DevTeam ?? "",
