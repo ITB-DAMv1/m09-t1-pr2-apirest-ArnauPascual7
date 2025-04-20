@@ -8,6 +8,7 @@ using WebApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
+using WebApi.Hubs;
 
 namespace WebApi
 {
@@ -103,9 +104,26 @@ namespace WebApi
 
             builder.Services.AddEndpointsApiExplorer();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.WithOrigins("https://localhost:7263");
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                    policy.AllowCredentials();
+                });
+            });
+
+            builder.Services.AddSignalR();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+
+            app.UseCors();
+
+            app.MapHub<XatHub>("/xathub");
 
             using (var scope = app.Services.CreateScope())
             {
