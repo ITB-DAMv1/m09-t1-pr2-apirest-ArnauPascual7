@@ -2,14 +2,32 @@ namespace WebRazorPage
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            await Task.Delay(3000);
 
             // Add services to the container.
             builder.Services.AddRazorPages();
 
+            string apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? throw new InvalidOperationException("API base URL not found");
+            int apiTimeout = int.Parse(builder.Configuration["ApiSettings:TimeoutSeconds"]);
+
+
+            builder.Services.AddHttpClient("ApiGameJam", client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(apiTimeout);
+            });
+
+            builder.Services.AddSession();
+
             var app = builder.Build();
+
+            app.UseSession();
+
+            app.UseRouting();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
