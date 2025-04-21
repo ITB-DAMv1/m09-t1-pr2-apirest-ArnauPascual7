@@ -30,6 +30,14 @@ namespace WebRazorPage.Pages
             }
 
             var client = _httpClientFactory.CreateClient("ApiGameJam");
+
+            var token = HttpContext.Session.GetString("AuthToken");
+            if (!string.IsNullOrEmpty(token))
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            }
+
             var response = await client.PostAsJsonAsync("api/auth/admin/registre", Register);
 
             if (response.IsSuccessStatusCode)
