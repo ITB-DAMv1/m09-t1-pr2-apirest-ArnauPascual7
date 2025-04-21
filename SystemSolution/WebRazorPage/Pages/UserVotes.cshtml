@@ -10,9 +10,28 @@
 
 @if (isLogged)
 {
-	@foreach (var vote in Model.Votes)
+	if (Model.GamesVoted.Any())
 	{
-		<h3>@vote</h3>
+		<ul class="list-group">
+			@foreach (var vote in Model.GamesVoted)
+			{
+				<li class="list-group-item">
+					<strong>Joc votat:</strong> @vote.Key <br />
+					<strong>Votació:</strong> @vote.Value.ToString("dd/MM/yyyy HH:mm:ss") <br />
+				</li>
+			}
+		</ul>
+	}
+	else
+	{
+		<p class="alert-info">Encara no has votat cap joc.</p>
+	}
+
+	<a asp-page="Index" class="btn btn-secondary">Tornar</a>
+
+	@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+	{
+		<div class="alert alert-danger mt-2">@Model.ErrorMessage</div>
 	}
 }
 else
