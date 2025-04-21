@@ -31,6 +31,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames()
         {
+            // This Debugs only works with Swagger
             Debug.WriteLine("?: User Name Logged -> " + User.Identity?.Name);
             Debug.WriteLine("?: User Id -> " + User.FindFirstValue(ClaimTypes.NameIdentifier));
             Debug.WriteLine("?: User Role -> " + User.FindFirstValue(ClaimTypes.Role));
@@ -107,15 +108,15 @@ namespace WebApi.Controllers
         public async Task<ActionResult<Game>> PostGame(GameDTO gameDTO)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
             var game = Tools.GameHelper.SetGameFromGameDTO(gameDTO);
 
             _context.Games.Add(game);
             await _context.SaveChangesAsync();
 
-            //return Ok(gameDTO);
-            //return CreatedAtAction("GetGame", new { id = await _context.Games.FindAsync() }, game);
             return CreatedAtAction("GetGame", new { id = game.Id }, game);
         }
 
@@ -153,8 +154,6 @@ namespace WebApi.Controllers
                 return Unauthorized("No ets un usuari autoritzat");
             }
 
-            //var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-
             var existingVote = await _context.Votes.FirstOrDefaultAsync(v => v.GameId == game.Id && v.UserId == userId);
             if (existingVote != null)
             {
@@ -164,18 +163,16 @@ namespace WebApi.Controllers
             var vote = new Vote()
             {
                 GameId = game.Id,
-                UserId = userId,
-                /*Game = game,
-                User = user*/
+                UserId = userId
             };
 
             _context.Votes.Add(vote);
             await _context.SaveChangesAsync();
 
             return Ok("Vot registrat correctament");
-            //return CreatedAtAction("GetGame", new { id = game.Id }, game);
         }
 
+        // GET: api/Games/votes
         [Authorize(Roles = "Admin,User")]
         [HttpGet("votes")]
         public async Task<IActionResult> GetVotes()
