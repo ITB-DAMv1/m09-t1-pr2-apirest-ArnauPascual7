@@ -176,6 +176,18 @@ namespace WebApi.Controllers
             //return CreatedAtAction("GetGame", new { id = game.Id }, game);
         }
 
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("votes")]
+        public async Task<IActionResult> GetVotes()
+        {
+            var votes = await _context.Votes.ToListAsync();
+            if (votes == null)
+            {
+                return NotFound("No hi ha vots");
+            }
+            return Ok(votes);
+        }
+
         private bool GameExists(int id)
         {
             return _context.Games.Any(e => e.Id == id);
