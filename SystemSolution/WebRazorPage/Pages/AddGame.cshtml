@@ -6,25 +6,32 @@
 
 <h2>Afegir Joc</h2>
 
-<form method="post">
-    <div asp-validation-summary="All"></div>
-    <div class="mb-3">
-        <label asp-for="Game.Title"></label>
-        <input asp-for="Game.Title" class="form-control" />
-        <span asp-validation-for="Game.Title" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Game.Description"></label>
-        <input asp-for="Game.Description" class="form-control" />
-        <span asp-validation-for="Game.Description" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Game.DevTeam"></label>
-        <input asp-for="Game.DevTeam" class="form-control" />
-        <span asp-validation-for="Game.DevTeam" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Afegir</button>
-</form>
+@if (User.IsInRole("Admin"))
+{
+    <form method="post">
+        <div asp-validation-summary="All"></div>
+        <div class="mb-3">
+            <label asp-for="Game.Title"></label>
+            <input asp-for="Game.Title" class="form-control" />
+            <span asp-validation-for="Game.Title" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Game.Description"></label>
+            <input asp-for="Game.Description" class="form-control" />
+            <span asp-validation-for="Game.Description" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Game.DevTeam"></label>
+            <input asp-for="Game.DevTeam" class="form-control" />
+            <span asp-validation-for="Game.DevTeam" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Afegir</button>
+    </form>
+}
+else
+{
+    <p class="alert alert-danger mt-2">Només els administradors poden crear jocs</p>
+}
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <div class="alert alert-danger mt-2">@Model.ErrorMessage</div>

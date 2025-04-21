@@ -6,50 +6,57 @@
 
 <h2>Editar Joc</h2>
 
-@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+@if (User.IsInRole("Admin"))
 {
-	<div class="alert alert-danger">@Model.ErrorMessage</div>
-}
-@if (Model.Game != null)
-{
-	<dl class="row">
-		<dt class="col-sm-3">
-			@Html.DisplayNameFor(model => model.Game.Title)
-		</dt>
-		<dd class="col-sm-9">
-			@Html.DisplayFor(model => model.Game.Title)
-		</dd>
-		<dt class="col-sm-3">
-			@Html.DisplayNameFor(model => model.Game.DevTeam)
-		</dt>
-		<dd class="col-sm-9">
-			@Html.DisplayFor(model => model.Game.DevTeam)
-		</dd>
-		<dt class="col-sm-3">
-			@Html.DisplayNameFor(model => model.Game.Description)
-		</dt>
-		<dd class="col-sm-9">
-			@Html.DisplayFor(model => model.Game.Description)
-		</dd>
-	</dl>
+	@if (Model.Game != null)
+	{
+		<dl class="row">
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(model => model.Game.Title)
+			</dt>
+			<dd class="col-sm-9">
+				@Html.DisplayFor(model => model.Game.Title)
+			</dd>
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(model => model.Game.DevTeam)
+			</dt>
+			<dd class="col-sm-9">
+				@Html.DisplayFor(model => model.Game.DevTeam)
+			</dd>
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(model => model.Game.Description)
+			</dt>
+			<dd class="col-sm-9">
+				@Html.DisplayFor(model => model.Game.Description)
+			</dd>
+		</dl>
 
-	<form method="post">
-		<div class="mb-3">
-			<label asp-for="NewGame.Title"></label>
-			<input asp-for="NewGame.Title" class="form-control" />
-			<span asp-validation-for="NewGame.Title" class="text-danger"></span>
-		</div>
-		<div class="mb-3">
-			<label asp-for="NewGame.DevTeam"></label>
-			<input asp-for="NewGame.DevTeam" class="form-control"></input>
-			<span asp-validation-for="NewGame.DevTeam" class="text-danger"></span>
-		</div>
-		<div class="mb-3">
-			<label asp-for="NewGame.Description"></label>
-			<textarea asp-for="NewGame.Description" class="form-control"></textarea>
-			<span asp-validation-for="NewGame.Description" class="text-danger"></span>
-		</div>
-		<button type="submit" class="btn btn-primary">Desar</button>
-		<a asp-page="Index" class="btn btn-secondary">Cancel·lar</a>
-	</form>
+		<form method="post">
+			<div class="mb-3">
+				<label asp-for="NewGame.Title"></label>
+				<input asp-for="NewGame.Title" class="form-control" />
+				<span asp-validation-for="NewGame.Title" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="NewGame.DevTeam"></label>
+					<input asp-for="NewGame.DevTeam" class="form-control"></input>
+				<span asp-validation-for="NewGame.DevTeam" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="NewGame.Description"></label>
+				<textarea asp-for="NewGame.Description" class="form-control"></textarea>
+				<span asp-validation-for="NewGame.Description" class="text-danger"></span>
+			</div>
+			<button type="submit" class="btn btn-primary">Desar</button>
+			<a asp-page="Index" class="btn btn-secondary">Cancel·lar</a>
+		</form>
+		@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+		{
+			<div class="alert alert-danger">@Model.ErrorMessage</div>
+		}
+	}
+}
+else
+{
+	<p class="alert alert-danger mt-2">Només els administradors poden editar jocs</p>
 }
