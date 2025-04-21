@@ -29,7 +29,7 @@ namespace WebApi.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames()
+        public async Task<ActionResult<IEnumerable<GameWithIdDTO>>> GetGames()
         {
             // This Debugs only works with Swagger
             Debug.WriteLine("?: User Name Logged -> " + User.Identity?.Name);
@@ -37,7 +37,7 @@ namespace WebApi.Controllers
             Debug.WriteLine("?: User Role -> " + User.FindFirstValue(ClaimTypes.Role));
 
             var dbGames = await _context.Games.ToListAsync();
-            var games = dbGames.Select(Tools.GameHelper.SetGameDTOFromGame).ToList();
+            var games = dbGames.Select(Tools.GameHelper.SetGameWithIdDTOFromGame).ToList();
             for (var i = 0; i < games.Count; i++)
             {
                 var votes = await _context.Votes.Where(v => v.GameId == dbGames[i].Id).ToListAsync();
