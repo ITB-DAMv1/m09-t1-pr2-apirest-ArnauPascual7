@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Win32;
-using WebRazorPage.Models;
+using WebRazorPage.DTOs;
 
 namespace WebRazorPage.Pages
 {

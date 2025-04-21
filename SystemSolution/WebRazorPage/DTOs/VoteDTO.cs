@@ -1,4 +1,4 @@
-﻿namespace WebRazorPage.Models
+﻿namespace WebRazorPage.DTOs
 {
     public class VoteDTO
     {
