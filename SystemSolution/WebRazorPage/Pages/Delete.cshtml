@@ -6,39 +6,46 @@
 
 <h1>Eliminar Joc</h1>
 
-<div>
-	@if (Model.Game != null)
-	{
-		<dl class="row">
-			<dt class="col-sm-3">
-				@Html.DisplayNameFor(model => model.Game.Title)
-			</dt>
-			<dd class="col-sm-9">
-				@Html.DisplayFor(model => model.Game.Title)
-			</dd>
-			<dt class="col-sm-3">
-				@Html.DisplayNameFor(model => model.Game.DevTeam)
-			</dt>
-			<dd class="col-sm-9">
-				@Html.DisplayFor(model => model.Game.DevTeam)
-			</dd>
-			<dt class="col-sm-3">
-				@Html.DisplayNameFor(model => model.Game.Description)
-			</dt>
-			<dd class="col-sm-9">
-				@Html.DisplayFor(model => model.Game.Description)
-			</dd>
-			<dt class="col-sm-3">
-				Vots
-			</dt>
-			<dd class="col-sm-9">
-				@Model.Game.VoteCount
-			</dd>
-		</dl>
+@if (User.IsInRole("Admin"))
+{
+	<div>
+		@if (Model.Game != null)
+		{
+			<dl class="row">
+				<dt class="col-sm-3">
+					@Html.DisplayNameFor(model => model.Game.Title)
+				</dt>
+				<dd class="col-sm-9">
+					@Html.DisplayFor(model => model.Game.Title)
+				</dd>
+				<dt class="col-sm-3">
+					@Html.DisplayNameFor(model => model.Game.DevTeam)
+				</dt>
+				<dd class="col-sm-9">
+					@Html.DisplayFor(model => model.Game.DevTeam)
+				</dd>
+				<dt class="col-sm-3">
+					@Html.DisplayNameFor(model => model.Game.Description)
+				</dt>
+				<dd class="col-sm-9">
+					@Html.DisplayFor(model => model.Game.Description)
+				</dd>
+				<dt class="col-sm-3">
+					Vots
+				</dt>
+				<dd class="col-sm-9">
+					@Model.Game.VoteCount
+				</dd>
+			</dl>
 
-		<form method="post">
-			<button type="submit" class="btn btn-danger">Eliminar</button>
-			<a asp-page="Index" class="btn btn-secondary">Cancel·lar</a>
-		</form>
-	}
-</div>
+			<form method="post">
+				<button type="submit" class="btn btn-danger">Eliminar</button>
+				<a asp-page="Index" class="btn btn-secondary">Cancel·lar</a>
+			</form>
+		}
+	</div>
+}
+else
+{
+	<p class="alert alert-danger mt-2">Només els administradors poden eliminar jocs</p>
+}
