@@ -1,0 +1,21 @@
+﻿@page
+@model WebRazorPage.Pages.UserVotesModel
+@{
+	ViewData["Title"] = "Vots";
+	var isLogged = !string.IsNullOrEmpty(Model.Token);
+	var username = User.Identity?.Name;
+}
+
+<h2>Vots realitzats</h2>
+
+@if (isLogged)
+{
+	@foreach (var vote in Model.Votes)
+	{
+		<h3>@vote</h3>
+	}
+}
+else
+{
+	<p class="alert-danger">Has d'iniciar sessió per veure els vots</p>
+}
