@@ -1,0 +1,48 @@
+﻿@page
+@model WebRazorPage.Pages.AdminRegisterModel
+@{
+    ViewData["Title"] = "Admin Register";
+}
+
+<h2>Registre d'administrador</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    <form method="post">
+        <div asp-validation-summary="All"></div>
+        <div class="mb-3">
+            <label asp-for="Register.Name"></label>
+            <input asp-for="Register.Name" class="form-control" />
+            <span asp-validation-for="Register.Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Register.Username"></label>
+            <input asp-for="Register.Username" class="form-control" />
+            <span asp-validation-for="Register.Username" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Register.Email"></label>
+            <input asp-for="Register.Email" class="form-control" />
+            <span asp-validation-for="Register.Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Register.Password"></label>
+            <input asp-for="Register.Password" class="form-control" type="password" />
+            <span asp-validation-for="Register.Password" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Register.ConfirmPassword"></label>
+            <input asp-for="Register.ConfirmPassword" class="form-control" type="password" />
+            <span asp-validation-for="Register.ConfirmPassword" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+    </form>
+}
+else
+{
+    <p class="alert alert-danger mt-2">Només els administradors poden registrar altres administradors</p>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger mt-2">@Model.ErrorMessage</div>
+}

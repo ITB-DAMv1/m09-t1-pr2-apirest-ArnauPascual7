@@ -1,0 +1,53 @@
+﻿@page
+@model WebRazorPage.Pages.UsersXatModel
+@{
+    ViewData["Title"] = "Xat";
+    var isLogged = !string.IsNullOrEmpty(Model.Token);
+	var username = User.Identity?.Name;
+}
+
+<h2>Xat en temps real</h2>
+
+@if (isLogged)
+{
+    <label for="missatge">Missatge:</label>
+    <input id="missatge" placeholder="Escriu un missatge" />
+    <button onclick="enviaMissatge()">Enviar</button>
+
+    <ul id="missatges"></ul>
+}
+else
+{
+    <p class="alert alert-danger mt-2">Necessites iniciar sessió per utilitzar el xat</p>
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        // Crear connexió amb el Hub al servidor extern
+        const connexio = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:7026/xathub")
+            .withAutomaticReconnect()
+            .build();
+
+        // Escoltar missatges entrants del servidor
+        connexio.on("ReceiveMessage", (usuari, missatge) => {
+            const entrada = document.createElement("li");
+            entrada.textContent = `${usuari}: ${missatge}`;
+            document.getElementById("missatges").appendChild(entrada);
+        });
+
+        // Iniciar la connexió
+        connexio.start()
+            .then(() => console.log("Connectat a SignalR"))
+            .catch(err => console.error("Error de connexió:", err));
+
+        // Enviar missatge al servidor
+        function enviaMissatge() {
+            const usuari = '@username';
+            const missatge = document.getElementById("missatge").value;
+            connexio.invoke("SendMessage", usuari, missatge)
+                .catch(err => console.error("Error en enviar:", err));
+        }
+    </script>
+}

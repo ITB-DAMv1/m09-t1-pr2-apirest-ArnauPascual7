@@ -1,0 +1,41 @@
+﻿@page
+@model WebRazorPage.Pages.UserVotesModel
+@{
+	ViewData["Title"] = "Vots";
+	var isLogged = !string.IsNullOrEmpty(Model.Token);
+	var username = User.Identity?.Name;
+}
+
+<h2>Vots realitzats</h2>
+
+@if (isLogged)
+{
+	if (Model.GamesVoted.Any())
+	{
+		<ul class="list-group">
+			@foreach (var vote in Model.GamesVoted)
+			{
+				<li class="list-group-item">
+					<strong>Joc votat:</strong> @vote.Key <br />
+					<strong>Votació:</strong> @vote.Value.ToString("dd/MM/yyyy HH:mm:ss") <br />
+				</li>
+			}
+		</ul>
+	}
+	else
+	{
+		<p class="alert-info">Encara no has votat cap joc.</p>
+	}
+}
+else
+{
+	<p class="alert alert-danger mt-2">Has d'iniciar sessió per veure els teus vots</p>
+}
+<br />
+
+<a asp-page="Index" class="btn btn-secondary">Tornar</a>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+	<div class="alert alert-danger mt-2">@Model.ErrorMessage</div>
+}

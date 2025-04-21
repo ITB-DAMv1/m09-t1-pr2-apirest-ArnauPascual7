@@ -1,10 +1,63 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "GameJam";
+    var isLogged = !string.IsNullOrEmpty(Model.Token);
+    var isAdmin = User.IsInRole("Admin");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    <div class="text-center"><h1 class="display-4">ITB Game Jam 2025</h1></div>
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+    @if (Model.Games.Any())
+    {
+        if (isAdmin)
+        {
+            <a class="btn btn-primary" asp-page="\AddGame">Afegir Joc</a>
+        }
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Títol</th>
+                    <th>Equip Desenvolupador</th>
+                    <th>Vots</th>
+                    <th></th>
+                    @if (isAdmin)
+                    {
+                        <th></th>
+                        <th></th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var game in Model.Games)
+                {
+                    <tr>
+                        <td>@game.Title</td>
+                        <td>@game.DevTeam</td>
+                        <td>@game.VoteCount</td>
+                        <td>
+                            <a asp-page="Details" asp-route-id="@game.Id" class="btn btn-primary">Veure Detalls</a>
+                        </td>
+                        @if (isAdmin)
+                        {
+                            <td>
+                                <a asp-page="Edit" asp-route-id="@game.Id" class="btn btn-primary">Editar</a>
+                            </td>
+                            <td>
+                                <a asp-page="Delete" asp-route-id="@game.Id" class="btn btn-danger">Eliminar</a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No hi ha jocs registrats</p>
+    }
 </div>
