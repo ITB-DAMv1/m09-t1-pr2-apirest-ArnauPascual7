@@ -90,26 +90,6 @@ namespace WebApi.Controllers
                 return Unauthorized("Email o contrasenya incorrectes");
             }
 
-            /*var userRole = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
-            Debug.WriteLine("?: User Role -> " + userRole);
-
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, user.Name ?? ""),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, userRole ?? "")
-            };
-
-            var roles = await _userManager.GetRolesAsync(user);
-
-            if (roles != null)
-            {
-                foreach (var role in roles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
-            }*/
-
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
