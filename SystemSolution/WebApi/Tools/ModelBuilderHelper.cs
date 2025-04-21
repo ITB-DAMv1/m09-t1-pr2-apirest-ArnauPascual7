@@ -9,37 +9,37 @@ namespace WebApi.Tools
     {
         public static void Seed(this ModelBuilder builder)
         {
-            List<GameDTO> games = new List<GameDTO>()
+            List<GameWithIdDTO> games = new List<GameWithIdDTO>()
             {
-                new GameDTO
+                new GameWithIdDTO
                 {
                     Id = 1,
                     Title = "Blasphemous",
                     Description = "A dark and brutal Metroidvania set in a world inspired by Spanish culture and religion.",
                     DevTeam = "The Game Kitchen"
                 },
-                new GameDTO
+                new GameWithIdDTO
                 {
                     Id = 2,
                     Title = "Darkest Dungeon",
                     Description = "A challenging turn-based RPG that focuses on the psychological stresses of adventuring.",
                     DevTeam = "Red Hook Studios"
                 },
-                new GameDTO
+                new GameWithIdDTO
                 {
                     Id = 3,
                     Title = "THE FINALS",
                     Description = "A fast-paced, team-based shooter with a unique destructible environment.",
                     DevTeam = "Embark Studios"
                 },
-                new GameDTO
+                new GameWithIdDTO
                 {
                     Id = 4,
                     Title = "Five Nights at Freddy's: Security Breach",
                     Description = "A survival horror game set in a large shopping mall filled with animatronic characters.",
                     DevTeam = "Steel Wool Studios"
                 },
-                new GameDTO
+                new GameWithIdDTO
                 {
                     Id = 5,
                     Title = "GRIS",

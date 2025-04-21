@@ -2,8 +2,9 @@
 
 namespace WebApi.DTOs
 {
-    public class GameDTO
+    public class GameWithIdDTO
     {
+        public int Id { get; set; }
         [Required]
         public string Title { get; set; } = string.Empty;
 
@@ -11,7 +12,7 @@ namespace WebApi.DTOs
 
         [Required]
         public string DevTeam { get; set; } = string.Empty;
-
+        
         public int VoteCount { get; set; }
     }
 }
