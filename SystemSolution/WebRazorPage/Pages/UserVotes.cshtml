@@ -26,15 +26,16 @@
 	{
 		<p class="alert-info">Encara no has votat cap joc.</p>
 	}
-
-	<a asp-page="Index" class="btn btn-secondary">Tornar</a>
-
-	@if (!string.IsNullOrEmpty(Model.ErrorMessage))
-	{
-		<div class="alert alert-danger mt-2">@Model.ErrorMessage</div>
-	}
 }
 else
 {
 	<p class="alert-danger">Has d'iniciar sessió per veure els vots</p>
+}
+<br />
+
+<a asp-page="Index" class="btn btn-secondary">Tornar</a>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+	<div class="alert alert-danger mt-2">@Model.ErrorMessage</div>
 }
