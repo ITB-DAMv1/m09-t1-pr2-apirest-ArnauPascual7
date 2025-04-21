@@ -129,6 +129,7 @@ namespace WebApi
             {
                 var services = scope.ServiceProvider;
                 await Tools.RoleHelper.CreateRoles(services);
+                await Tools.ModelBuilderHelper.SeedUsersAsync(services);
             }
 
             if (app.Environment.IsDevelopment())
