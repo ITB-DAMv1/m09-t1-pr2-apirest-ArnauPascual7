@@ -6,20 +6,19 @@ using WebRazorPage.Models;
 
 namespace WebRazorPage.Pages
 {
-    public class DetailsModel : PageModel
+    public class DeleteModel : PageModel
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<DetailsModel> _logger;
+        private readonly ILogger<DeleteModel> _logger;
 
         [BindProperty]
         public Game? Game { get; set; }
 
         public string? Token { get; set; }
 
-        public string? VoteMessage { get; set; }
         public string? ErrorMessage { get; set; }
 
-        public DetailsModel(IHttpClientFactory httpClientFactory, ILogger<DetailsModel> logger)
+        public DeleteModel(IHttpClientFactory httpClientFactory, ILogger<DeleteModel> logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -39,14 +38,12 @@ namespace WebRazorPage.Pages
 
                 if (Game == null)
                 {
-                    Debug.WriteLine("?: Game is null");
                     ErrorMessage = "No s'ha trobat el joc.";
                 }
                 return Page();
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                Debug.WriteLine("?: " + response.StatusCode);
                 ErrorMessage = "No s'ha trobat el joc.";
                 return Page();
             }
@@ -57,7 +54,6 @@ namespace WebRazorPage.Pages
                 return Page();
             }
         }
-
         public async Task<IActionResult> OnPostAsync(int id)
         {
             var client = _httpClientFactory.CreateClient("ApiGameJam");
@@ -69,30 +65,19 @@ namespace WebRazorPage.Pages
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
 
-            var response = await client.PostAsync($"api/games/{id}/vote", null);
+            var response = await client.DeleteAsync($"api/games/{id}");
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                VoteMessage = "Vot registrat correctament!";
-                /*var gameResponse = await client.GetAsync($"api/games/{id}");
-                if (gameResponse.IsSuccessStatusCode)
-                {
-                    var json = await gameResponse.Content.ReadAsStringAsync();
-                    Game = JsonSerializer.Deserialize<Game>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                }*/
-            }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                VoteMessage = !string.IsNullOrWhiteSpace(error) ? error : "No s'ha pogut votar (potser ja has votat aquest joc).";
+                ErrorMessage = "Error en eliminar el joc.";
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                VoteMessage = "Has d'estar identificat per votar.";
+                ErrorMessage = "Has d'estar identificat per eliminar el joc.";
             }
             else
             {
-                VoteMessage = $"Error en votar: {response.StatusCode}";
+                return RedirectToPage("Index");
             }
             return Page();
         }
