@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace WebApi.Migrations
 {
     /// <inheritdoc />
@@ -57,9 +59,9 @@ namespace WebApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DevTeam = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    DevTeam = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -179,7 +181,7 @@ namespace WebApi.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     GameId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -197,6 +199,18 @@ namespace WebApi.Migrations
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Games",
+                columns: new[] { "Id", "Description", "DevTeam", "Title" },
+                values: new object[,]
+                {
+                    { 1, "A dark and brutal Metroidvania set in a world inspired by Spanish culture and religion.", "The Game Kitchen", "Blasphemous" },
+                    { 2, "A challenging turn-based RPG that focuses on the psychological stresses of adventuring.", "Red Hook Studios", "Darkest Dungeon" },
+                    { 3, "A fast-paced, team-based shooter with a unique destructible environment.", "Embark Studios", "THE FINALS" },
+                    { 4, "A survival horror game set in a large shopping mall filled with animatronic characters.", "Steel Wool Studios", "Five Nights at Freddy's: Security Breach" },
+                    { 5, "A visually stunning platformer that tells a story of loss and recovery through beautiful art and music.", "Nomada Studio", "GRIS" }
                 });
 
             migrationBuilder.CreateIndex(

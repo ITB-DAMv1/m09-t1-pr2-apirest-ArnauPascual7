@@ -232,17 +232,58 @@ namespace WebApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("DevTeam")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Games");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "A dark and brutal Metroidvania set in a world inspired by Spanish culture and religion.",
+                            DevTeam = "The Game Kitchen",
+                            Title = "Blasphemous"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "A challenging turn-based RPG that focuses on the psychological stresses of adventuring.",
+                            DevTeam = "Red Hook Studios",
+                            Title = "Darkest Dungeon"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "A fast-paced, team-based shooter with a unique destructible environment.",
+                            DevTeam = "Embark Studios",
+                            Title = "THE FINALS"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "A survival horror game set in a large shopping mall filled with animatronic characters.",
+                            DevTeam = "Steel Wool Studios",
+                            Title = "Five Nights at Freddy's: Security Breach"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "A visually stunning platformer that tells a story of loss and recovery through beautiful art and music.",
+                            DevTeam = "Nomada Studio",
+                            Title = "GRIS"
+                        });
                 });
 
             modelBuilder.Entity("WebApi.Models.Vote", b =>
@@ -260,6 +301,7 @@ namespace WebApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -333,7 +375,8 @@ namespace WebApi.Migrations
                     b.HasOne("WebApi.Models.AppUser", "User")
                         .WithMany("Votes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Game");
 
