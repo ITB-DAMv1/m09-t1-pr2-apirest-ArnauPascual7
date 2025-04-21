@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebRazorPage.Models
+namespace WebRazorPage.DTOs
 {
     public class GameDTO
     {
@@ -11,7 +11,5 @@ namespace WebRazorPage.Models
 
         [Required]
         public string DevTeam { get; set; } = string.Empty;
-
-        public int VoteCount { get; set; }
     }
 }

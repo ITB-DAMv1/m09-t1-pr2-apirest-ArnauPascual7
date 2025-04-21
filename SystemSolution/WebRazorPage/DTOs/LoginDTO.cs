@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebRazorPage.Models
+namespace WebRazorPage.DTOs
 {
     public class LoginDTO
     {
