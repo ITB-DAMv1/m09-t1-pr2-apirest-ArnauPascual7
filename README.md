@@ -2,7 +2,17 @@
 
 # m09-t1-pr2-apirest-ArnauPascual7
 
-Arnau Pascual
+### Arnau Pascual
+
+### Usuaris per defecte
+
+User:
+- Email: user@example.com
+- Contrasenya: P@ssw0rd123
+
+Admin:
+- Email: admin@example.com
+- Contrasenya: P@ssw0rd123
 
 ## Solució Proposada
 
@@ -81,6 +91,8 @@ Tots els DTOs del client són iguals al seus respectius de l'api.
 - **Program.cs**: El program conté inicialitzacions i configuracions de serveis.
 
 ## Diagrama BBDD final
+
+La taula Votes es crea de la relació de molts-molts entre jocs i usuaris.
 
 ![Diagrama](./BBDD_Diagram/GameJamDbDiagram.jpg)
 
