@@ -30,6 +30,8 @@ public class IndexModel : PageModel
         {
             var json = await response.Content.ReadAsStringAsync();
             Games = JsonSerializer.Deserialize<List<Game>>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            Games.Sort((x, y) => x.VoteCount.CompareTo(y.VoteCount));
+            Games.Reverse();
         }
         else
         {
