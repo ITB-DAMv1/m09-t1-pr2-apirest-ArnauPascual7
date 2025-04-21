@@ -76,7 +76,7 @@ namespace WebApi.Tools
             result = await userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(admin, "User");
+                await userManager.AddToRoleAsync(user, "User");
             }
         }
     }
