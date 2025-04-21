@@ -49,6 +49,12 @@
                                     <button type="submit" class="nav-link text-white btn btn-link" style="padding-top:9px;">Tancar sessió</button>
                                 </form>
                             </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-page="/AdminRegister">Registrar Administrador</a>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>

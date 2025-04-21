@@ -52,7 +52,7 @@ namespace WebApi.Controllers
             return BadRequest(result.Errors.Select(e => e.Description));
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("admin/registre")]
         public async Task<IActionResult> AdminRegister([FromBody] RegisterDTO reg)
         {

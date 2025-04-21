@@ -1,17 +1,12 @@
 ﻿@page "{id:int}"
-@model WebRazorPage.Pages.DetailsModel
+@model WebRazorPage.Pages.DeleteModel
 @{
-	ViewData["Title"] = "Details";
-	var isLogged = !string.IsNullOrEmpty(Model.Token);
+	ViewData["Title"] = "Eliminar";
 }
 
-<h1>Detalls</h1>
+<h1>Eliminar Joc</h1>
 
 <div>
-	@if (!string.IsNullOrEmpty(Model.ErrorMessage))
-	{
-		<div class="alert alert-danger">@Model.ErrorMessage</div>
-	}
 	@if (Model.Game != null)
 	{
 		<dl class="row">
@@ -41,19 +36,9 @@
 			</dd>
 		</dl>
 
-		@if (isLogged)
-		{
-			<form method="post">
-				<input type="hidden" asp-for="Game.Id" />
-				<button type="submit" class="btn btn-primary">Votar</button>
-			</form>
-		}
-
-		<a asp-page="Index" class="btn btn-secondary">Tornar</a>
-
-		@if (!string.IsNullOrEmpty(Model.VoteMessage))
-		{
-			<div class="alert alert-info mt-2">@Model.VoteMessage</div>
-		}
+		<form method="post">
+			<button type="submit" class="btn btn-danger">Eliminar</button>
+			<a asp-page="Index" class="btn btn-secondary">Cancel·lar</a>
+		</form>
 	}
 </div>

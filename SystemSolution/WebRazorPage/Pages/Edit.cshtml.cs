@@ -6,20 +6,20 @@ using WebRazorPage.Models;
 
 namespace WebRazorPage.Pages
 {
-    public class DetailsModel : PageModel
+    public class EditModel : PageModel
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<DetailsModel> _logger;
+        private readonly ILogger<EditModel> _logger;
 
         [BindProperty]
         public Game? Game { get; set; }
 
-        public string? Token { get; set; }
+        [BindProperty]
+        public GameDTO NewGame { get; set; } = new GameDTO();
 
-        public string? VoteMessage { get; set; }
         public string? ErrorMessage { get; set; }
 
-        public DetailsModel(IHttpClientFactory httpClientFactory, ILogger<DetailsModel> logger)
+        public EditModel(IHttpClientFactory httpClientFactory, ILogger<EditModel> logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -27,8 +27,6 @@ namespace WebRazorPage.Pages
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Token = HttpContext.Session.GetString("AuthToken");
-
             var client = _httpClientFactory.CreateClient("ApiGameJam");
             var response = await client.GetAsync($"api/Games/{id}");
 
@@ -39,14 +37,12 @@ namespace WebRazorPage.Pages
 
                 if (Game == null)
                 {
-                    Debug.WriteLine("?: Game is null");
                     ErrorMessage = "No s'ha trobat el joc.";
                 }
                 return Page();
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                Debug.WriteLine("?: " + response.StatusCode);
                 ErrorMessage = "No s'ha trobat el joc.";
                 return Page();
             }
@@ -60,6 +56,11 @@ namespace WebRazorPage.Pages
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             var client = _httpClientFactory.CreateClient("ApiGameJam");
 
             var token = HttpContext.Session.GetString("AuthToken");
@@ -69,32 +70,22 @@ namespace WebRazorPage.Pages
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
 
-            var response = await client.PostAsync($"api/games/{id}/vote", null);
+            var response = await client.PutAsJsonAsync($"api/games/{id}", NewGame);
 
             if (response.IsSuccessStatusCode)
             {
-                VoteMessage = "Vot registrat correctament!";
-                /*var gameResponse = await client.GetAsync($"api/games/{id}");
-                if (gameResponse.IsSuccessStatusCode)
-                {
-                    var json = await gameResponse.Content.ReadAsStringAsync();
-                    Game = JsonSerializer.Deserialize<Game>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                }*/
-            }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                VoteMessage = !string.IsNullOrWhiteSpace(error) ? error : "No s'ha pogut votar (potser ja has votat aquest joc).";
+                return RedirectToPage("/Index");
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                VoteMessage = "Has d'estar identificat per votar.";
+                ErrorMessage = "Has de ser administrador per a editar un joc";
+                return Page();
             }
             else
             {
-                VoteMessage = $"Error en votar: {response.StatusCode}";
+                ErrorMessage = "Error al editar el joc: " + response.StatusCode;
+                return Page();
             }
-            return Page();
         }
     }
 }
